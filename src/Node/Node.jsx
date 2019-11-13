@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./Node.css";
 // #09d3ac;
 const Node = props => {
-  //   console.log(props);
   const [row, setRow] = useState(0);
   const [col, setCol] = useState(0);
   const [isStart, setStart] = useState(false);

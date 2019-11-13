@@ -57,8 +57,12 @@ const Grid = () => {
     }
   };
 
-  dijkstra(grid);
-
+  const visualizeDijkstra = () => {
+    const startNode = grid[startRow][startCol];
+    const finishNode = grid[finishRow][finishCol];
+    dijkstra(grid, startNode, finishNode);
+  };
+  visualizeDijkstra();
   return (
     <div
       className="Grid"
