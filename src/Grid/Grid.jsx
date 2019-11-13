@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Node from "../Node/Node";
 import "./Grid.css";
-import dijkstra from "../Algorithms /Dijkstra";
+import { dijkstra, getShortestPath } from "../Algorithms /Dijkstra";
 
 // TODO* create handler for choosing start and finish node
 const startRow = 5;
@@ -60,39 +60,76 @@ const Grid = () => {
   const visualizeDijkstra = () => {
     const startNode = grid[startRow][startCol];
     const finishNode = grid[finishRow][finishCol];
-    dijkstra(grid, startNode, finishNode);
+    const visitedNodes = dijkstra(grid, startNode, finishNode);
+    const shortestPath = getShortestPath(finishNode);
+    animateDijkstra(visitedNodes, shortestPath);
   };
-  visualizeDijkstra();
+
+  const animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          animateShortestPath(nodesInShortestPathOrder);
+        }, 10 * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        document.getElementById(`node-${node.row}-${node.col}`).className =
+          "Node node-visited";
+      }, 10 * i);
+    }
+  };
+
+  const animateShortestPath = nodesInShortestPathOrder => {
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = nodesInShortestPathOrder[i];
+        document.getElementById(`node-${node.row}-${node.col}`).className =
+          "Node node-shortest-path";
+      }, 50 * i);
+    }
+  };
+
   return (
-    <div
-      className="Grid"
-      onMouseDown={() => {
-        handleMouseDown();
-      }}
-      onMouseUp={() => {
-        handleMouseUp();
-      }}
-    >
-      {grid.map((row, rowIdx) => {
-        return (
-          <div key={rowIdx} className="Row">
-            {row.map((node, nodeIdx) => {
-              const { row, col, isFinish, isStart, isWall } = node;
-              return (
-                <Node
-                  key={nodeIdx}
-                  row={row}
-                  col={col}
-                  isStart={isStart}
-                  isFinish={isFinish}
-                  isWall={isWall}
-                  mouseEnter={handleMouseEnter}
-                />
-              );
-            })}
-          </div>
-        );
-      })}
+    <div className="pathfinder-wrapper">
+      <button
+        onClick={() => {
+          visualizeDijkstra();
+        }}
+      >
+        visualizeDijkstra
+      </button>
+      <div
+        className="Grid"
+        onMouseDown={() => {
+          handleMouseDown();
+        }}
+        onMouseUp={() => {
+          handleMouseUp();
+        }}
+      >
+        {grid.map((row, rowIdx) => {
+          return (
+            <div key={rowIdx} className="Row">
+              {row.map((node, nodeIdx) => {
+                const { row, col, isFinish, isStart, isWall } = node;
+                return (
+                  <Node
+                    key={nodeIdx}
+                    row={row}
+                    col={col}
+                    isStart={isStart}
+                    isFinish={isFinish}
+                    isWall={isWall}
+                    mouseEnter={handleMouseEnter}
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

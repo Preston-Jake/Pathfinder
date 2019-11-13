@@ -14,7 +14,7 @@ const Node = props => {
     setStart(props.isStart);
     setFinish(props.isFinish);
     setWall(props.isWall);
-  });
+  }, [props.col, props.row, props.isStart, props.isFinish, props.isWall]);
 
   const extraClassName = isFinish
     ? "node-finish"
