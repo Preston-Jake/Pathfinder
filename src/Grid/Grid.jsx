@@ -3,7 +3,6 @@ import Node from "../Node/Node";
 import "./Grid.css";
 import { dijkstra, getShortestPath } from "../Algorithms /Dijkstra";
 
-// TODO* create handler for choosing start and finish node
 const startRow = 5;
 const startCol = 5;
 const finishRow = 15;
@@ -38,6 +37,7 @@ const Grid = () => {
   let [grid, setGrid] = useState(createGrid(20, 20));
   let [mousePressed, setMousePressed] = useState(false);
 
+  //handling walls Optimization
   const handleToggleWall = (row, col) => {
     let newGrid = [...grid];
     let node = newGrid[col][row];
@@ -56,40 +56,26 @@ const Grid = () => {
       handleToggleWall(row, col);
     }
   };
+  // optmize visualizer
 
   const visualizeDijkstra = () => {
     const startNode = grid[startRow][startCol];
     const finishNode = grid[finishRow][finishCol];
-    const visitedNodes = dijkstra(grid, startNode, finishNode);
+    const visitedNodes = dijkstra(grid, startNode, finishNode, setGrid);
     const shortestPath = getShortestPath(finishNode);
     animateDijkstra(visitedNodes, shortestPath);
   };
 
-  const animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
-    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-      if (i === visitedNodesInOrder.length) {
-        setTimeout(() => {
-          animateShortestPath(nodesInShortestPathOrder);
-        }, 10 * i);
-        return;
-      }
-      setTimeout(() => {
-        const node = visitedNodesInOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "Node node-visited";
-      }, 10 * i);
+  // working render
+  // setTimeOut for animation
+  const animateDijkstra = (visitedNodes, shortestPath) => {
+    for (let node of visitedNodes) {
+      node.isVisited = true;
+      setGrid([...grid]);
     }
   };
 
-  const animateShortestPath = nodesInShortestPathOrder => {
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "Node node-shortest-path";
-      }, 50 * i);
-    }
-  };
+  const animateShortestPath = nodesInShortestPathOrder => {};
 
   return (
     <div className="pathfinder-wrapper">
@@ -113,7 +99,7 @@ const Grid = () => {
           return (
             <div key={rowIdx} className="Row">
               {row.map((node, nodeIdx) => {
-                const { row, col, isFinish, isStart, isWall } = node;
+                const { row, col, isFinish, isStart, isWall, isVisited } = node;
                 return (
                   <Node
                     key={nodeIdx}
@@ -122,6 +108,7 @@ const Grid = () => {
                     isStart={isStart}
                     isFinish={isFinish}
                     isWall={isWall}
+                    isVisited={isVisited}
                     mouseEnter={handleMouseEnter}
                   />
                 );

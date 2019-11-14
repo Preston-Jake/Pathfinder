@@ -7,6 +7,7 @@ const Node = props => {
   const [isStart, setStart] = useState(false);
   const [isFinish, setFinish] = useState(false);
   const [isWall, setWall] = useState(false);
+  const [isVisited, setVisited] = useState(false);
 
   useEffect(() => {
     setCol(props.col);
@@ -14,7 +15,15 @@ const Node = props => {
     setStart(props.isStart);
     setFinish(props.isFinish);
     setWall(props.isWall);
-  }, [props.col, props.row, props.isStart, props.isFinish, props.isWall]);
+    setVisited(props.isVisited);
+  }, [
+    props.col,
+    props.row,
+    props.isStart,
+    props.isFinish,
+    props.isWall,
+    props.isVisited
+  ]);
 
   const extraClassName = isFinish
     ? "node-finish"
@@ -22,11 +31,12 @@ const Node = props => {
     ? "node-start"
     : isWall
     ? "node-wall"
+    : isVisited
+    ? "node-visited"
     : "";
 
   return (
     <div
-      id={`node-${row}-${col}`}
       className={`Node ${extraClassName}`}
       onMouseEnter={() => {
         props.mouseEnter(row, col);

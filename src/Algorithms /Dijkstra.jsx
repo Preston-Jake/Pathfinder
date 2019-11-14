@@ -5,8 +5,8 @@
 // wall
 // trapped
 // shortest path
-
-export function dijkstra(grid, startNode, finishNode) {
+//set timeout for
+export function dijkstra(grid, startNode, finishNode, setGrid) {
   let unvisited = getUnvisitedNodes(grid);
   startNode.distance = 0;
   let visited = [];
@@ -17,12 +17,11 @@ export function dijkstra(grid, startNode, finishNode) {
     if (closestNode.isWall) continue;
     //if closest node is Infinity then trapped
     if (closestNode.distance === Infinity) return visited;
-    closestNode.isVisited = true;
     // visited then push
     visited.push(closestNode);
     //if finish then return visited
     if (closestNode === finishNode) return visited;
-    updateNeighbors(closestNode, grid);
+    updateNeighbors(closestNode, grid, visited);
   }
 }
 
@@ -33,26 +32,28 @@ export function getShortestPath(finishNode) {
     shortestPath.unshift(currNode);
     currNode = currNode.previousNode;
   }
-  console.log(shortestPath);
   return shortestPath;
 }
 
-const updateNeighbors = (node, grid) => {
-  const neighbors = getNeighbors(node, grid);
+const updateNeighbors = (node, grid, visited) => {
+  const neighbors = getNeighbors(node, grid, visited);
   for (const neighbor of neighbors) {
     neighbor.distance = node.distance + 1;
     neighbor.previousNode = node;
   }
 };
 
-const getNeighbors = (node, grid) => {
+const getNeighbors = (node, grid, visited) => {
   let neighbors = [];
   const { col, row } = node;
   if (row > 0) neighbors.push(grid[col][row - 1]);
   if (row < grid.length - 1) neighbors.push(grid[col][row + 1]);
   if (col > 0) neighbors.push(grid[col - 1][row]);
   if (col < grid[0].length - 1) neighbors.push(grid[col + 1][row]);
-  return neighbors.filter(neighbor => !neighbor.isVisited);
+  return neighbors.filter(neighbor => {
+    let bool = visited.includes(neighbor);
+    if (bool === false) return neighbor;
+  });
 };
 
 const getUnvisitedNodes = grid => {
