@@ -66,14 +66,7 @@ const Grid = () => {
     animateDijkstra(visitedNodes, shortestPath);
   };
 
-  // working render
-  // setTimeOut for animation
-  const animateDijkstra = (visitedNodes, shortestPath) => {
-    for (let node of visitedNodes) {
-      node.isVisited = true;
-      setGrid([...grid]);
-    }
-  };
+  const animateDijkstra = (visitedNodes, shortestPath) => {};
 
   const animateShortestPath = nodesInShortestPathOrder => {};
 
