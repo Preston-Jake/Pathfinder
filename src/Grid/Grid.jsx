@@ -2,25 +2,27 @@ import React, { useState } from "react";
 import Node from "../Node/Node";
 import "./Grid.css";
 import { dijkstra, getShortestPath } from "../Algorithms /Dijkstra";
-
+// constants  for start and end nodes
 const startRow = 5;
 const startCol = 5;
 const finishRow = 15;
 const finishCol = 15;
 
+// creates a Node with both Algorithmic and DOM props
 const createNode = (col, row) => {
   return {
     col,
-    row,
-    isStart: row === startRow && col === startCol,
-    isFinish: row === finishRow && col === finishCol,
     distance: Infinity,
+    row,
+    isFinish: row === finishRow && col === finishCol,
+    isPath: false,
+    isStart: row === startRow && col === startCol,
     isVisited: false,
     isWall: false,
     previousNode: null
   };
 };
-
+// create the basic grid structure
 const createGrid = (rows, cols) => {
   let grid = [];
   for (let row = 0; row < rows; row++) {
@@ -34,10 +36,12 @@ const createGrid = (rows, cols) => {
 };
 
 const Grid = () => {
+  // default grid 20 X 20
   let [grid, setGrid] = useState(createGrid(20, 20));
   let [mousePressed, setMousePressed] = useState(false);
 
-  //handling walls Optimization
+  // handle walls
+  // needs opitization for on mouse events ****
   const handleToggleWall = (row, col) => {
     let newGrid = [...grid];
     let node = newGrid[col][row];
@@ -56,8 +60,8 @@ const Grid = () => {
       handleToggleWall(row, col);
     }
   };
-  // optmize visualizer
 
+  // visualiser
   const visualizeDijkstra = () => {
     const startNode = grid[startRow][startCol];
     const finishNode = grid[finishRow][finishCol];
@@ -65,10 +69,33 @@ const Grid = () => {
     const shortestPath = getShortestPath(finishNode);
     animateDijkstra(visitedNodes, shortestPath);
   };
-
-  const animateDijkstra = (visitedNodes, shortestPath) => {};
-
-  const animateShortestPath = nodesInShortestPathOrder => {};
+  //-- working great!
+  const animateDijkstra = (visitedNodes, shortestPath) => {
+    for (let i = 1; i <= visitedNodes.length; i++) {
+      setTimeout(function timer() {
+        if (visitedNodes[i] !== undefined) {
+          visitedNodes[i].isVisited = true;
+          setGrid([...grid]);
+          if (visitedNodes[i].isFinish === true) {
+            animateShortestPath(shortestPath);
+          }
+        }
+      }, i * 50);
+    }
+  };
+  // shortest path is not rendering css to the DOM
+  // seems like the state of the node isn't rendering
+  const animateShortestPath = shortestPath => {
+    for (let i = 1; i <= shortestPath.length; i++) {
+      setTimeout(function timer() {
+        if (shortestPath[i] !== undefined) {
+          shortestPath[i].isVisited = false;
+          shortestPath[i].isPath = true;
+          setGrid([...grid]);
+        }
+      }, i * 50);
+    }
+  };
 
   return (
     <div className="pathfinder-wrapper">
@@ -92,7 +119,15 @@ const Grid = () => {
           return (
             <div key={rowIdx} className="Row">
               {row.map((node, nodeIdx) => {
-                const { row, col, isFinish, isStart, isWall, isVisited } = node;
+                const {
+                  row,
+                  col,
+                  isFinish,
+                  isStart,
+                  isWall,
+                  isVisited,
+                  isPath
+                } = node;
                 return (
                   <Node
                     key={nodeIdx}
@@ -102,6 +137,7 @@ const Grid = () => {
                     isFinish={isFinish}
                     isWall={isWall}
                     isVisited={isVisited}
+                    isPath={isPath}
                     mouseEnter={handleMouseEnter}
                   />
                 );

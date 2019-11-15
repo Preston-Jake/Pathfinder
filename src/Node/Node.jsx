@@ -8,6 +8,7 @@ const Node = props => {
   const [isFinish, setFinish] = useState(false);
   const [isWall, setWall] = useState(false);
   const [isVisited, setVisited] = useState(false);
+  const [isPath, setPath] = useState(false);
 
   useEffect(() => {
     setCol(props.col);
@@ -16,13 +17,15 @@ const Node = props => {
     setFinish(props.isFinish);
     setWall(props.isWall);
     setVisited(props.isVisited);
+    setPath(props.isPath);
   }, [
     props.col,
     props.row,
     props.isStart,
     props.isFinish,
     props.isWall,
-    props.isVisited
+    props.isVisited,
+    props.isPath
   ]);
 
   const extraClassName = isFinish
@@ -33,6 +36,8 @@ const Node = props => {
     ? "node-wall"
     : isVisited
     ? "node-visited"
+    : isPath
+    ? "node-path"
     : "";
 
   return (
