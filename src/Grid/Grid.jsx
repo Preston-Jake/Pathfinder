@@ -2,7 +2,26 @@ import React, { useState } from "react";
 import Node from "../Node/Node";
 import "./Grid.css";
 import { dijkstra, getShortestPath } from "../Algorithms /Dijkstra";
-// constants  for start and end nodes
+import { aStar } from "../Algorithms /A*";
+
+// create a function that where you can move the stat  and end node by dragging it
+
+// optimize the speed == refactor to many rendering of the grid
+
+// instead of rendering the grid figure out a way to just render the node
+
+// work on more Algorithms
+
+// fix where the rows are actually rows
+
+//when I place to many walls the function will not run
+
+//TODO
+//1. Fix Mouse inputs
+//2. Movable start and finish nodes on drag
+//3. optimize the render method to render the child node and not the parent
+//4. clear grid
+
 const startRow = 5;
 const startCol = 5;
 const finishRow = 15;
@@ -36,29 +55,38 @@ const createGrid = (rows, cols) => {
 };
 
 const Grid = () => {
-  // default grid 20 X 20
   let [grid, setGrid] = useState(createGrid(20, 20));
   let [mousePressed, setMousePressed] = useState(false);
 
-  // handle walls
-  // needs opitization for on mouse events ****
+  const handleMouseDown = (row, col) => {
+    setMousePressed(true);
+    let node = grid[row][col];
+    if (!node.isStart && !node.isFinish) {
+      handleToggleWall(row, col);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setMousePressed(false);
+  };
+
+  const handleMouseEnter = (row, col) => {
+    let node = grid[row][col];
+    if (mousePressed && !node.isStart && !node.isFinish) {
+      handleToggleWall(row, col);
+    }
+  };
+
+  const handleMouseLeave = (row, col) => {
+    let node = grid[row][col];
+    return node;
+  };
+
   const handleToggleWall = (row, col) => {
     let newGrid = [...grid];
     let node = newGrid[col][row];
     node.isWall = node.isWall ? false : true;
     setGrid(newGrid);
-  };
-
-  const handleMouseDown = () => {
-    setMousePressed(true);
-  };
-  const handleMouseUp = () => {
-    setMousePressed(false);
-  };
-  const handleMouseEnter = (row, col) => {
-    if (mousePressed) {
-      handleToggleWall(row, col);
-    }
   };
 
   // visualiser
@@ -71,7 +99,7 @@ const Grid = () => {
   };
   //-- working great!
   const animateDijkstra = (visitedNodes, shortestPath) => {
-    for (let i = 1; i <= visitedNodes.length; i++) {
+    for (let i = 0; i <= visitedNodes.length; i++) {
       setTimeout(function timer() {
         if (visitedNodes[i] !== undefined) {
           visitedNodes[i].isVisited = true;
@@ -80,7 +108,7 @@ const Grid = () => {
             animateShortestPath(shortestPath);
           }
         }
-      }, i * 50);
+      }, i * 20);
     }
   };
   // shortest path is not rendering css to the DOM
@@ -97,8 +125,17 @@ const Grid = () => {
     }
   };
 
+  const visualizeAStar = () => {
+    const startNode = grid[startRow][startCol];
+    const finishNode = grid[finishRow][finishCol];
+    aStar(grid, startNode, finishNode);
+    // const visitedNodes = dijkstra(grid, startNode, finishNode, setGrid);
+    // const shortestPath = getShortestPath(finishNode);
+    // animateDijkstra(visitedNodes, shortestPath);
+  };
+
   return (
-    <div className="pathfinder-wrapper">
+    <div className="pathfinder-wrapper" onMouseUp={() => handleMouseUp()}>
       <button
         onClick={() => {
           visualizeDijkstra();
@@ -106,15 +143,8 @@ const Grid = () => {
       >
         visualizeDijkstra
       </button>
-      <div
-        className="Grid"
-        onMouseDown={() => {
-          handleMouseDown();
-        }}
-        onMouseUp={() => {
-          handleMouseUp();
-        }}
-      >
+
+      <div className="Grid">
         {grid.map((row, rowIdx) => {
           return (
             <div key={rowIdx} className="Row">
@@ -138,7 +168,9 @@ const Grid = () => {
                     isWall={isWall}
                     isVisited={isVisited}
                     isPath={isPath}
+                    mouseDown={handleMouseDown}
                     mouseEnter={handleMouseEnter}
+                    mouseLeave={handleMouseLeave}
                   />
                 );
               })}

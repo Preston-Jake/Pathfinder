@@ -13,7 +13,14 @@
 }
 
 .node-wall {
-  background: gray;
+  animation-name: createWall;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
 }
 
 .node-path {
@@ -95,5 +102,16 @@
   100% {
     transform: scale(1);
     background-color: rgb(255, 254, 106);
+  }
+}
+@keyframes createWall {
+  0% {
+    transform: scale(0.6);
+    background-color: rgb(255, 255, 255);
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgb(60, 60, 60);
   }
 }

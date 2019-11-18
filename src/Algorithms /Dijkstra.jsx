@@ -6,7 +6,7 @@
 // trapped
 // shortest path
 //set timeout for
-export function dijkstra(grid, startNode, finishNode, setGrid) {
+export function dijkstra(grid, startNode, finishNode) {
   let unvisited = getUnvisitedNodes(grid);
   startNode.distance = 0;
   let visited = [];
