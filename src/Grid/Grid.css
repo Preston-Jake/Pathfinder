@@ -1,8 +1,8 @@
 .Grid {
   margin-top: 100px;
-  display: flex;
+  /* display: flex; */
 }
 
 .Row {
-  margin: 5px;
+  display: flex;
 }

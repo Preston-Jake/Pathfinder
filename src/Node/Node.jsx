@@ -43,9 +43,9 @@ const Node = props => {
   return (
     <div
       className={`Node ${extraClassName}`}
-      onMouseEnter={() => {
-        props.mouseEnter(row, col);
-      }}
+      onMouseEnter={() => props.mouseEnter(row, col)}
+      onMouseDown={() => props.mouseDown(row, col)}
+      onMouseLeave={() => props.mouseLeave(row, col)}
     ></div>
   );
 };
