@@ -1,34 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Node from "../Node/Node";
 import "./Grid.css";
 import { dijkstra, getShortestPath } from "../Algorithms /Dijkstra";
-import { aStar } from "../Algorithms /A*";
+import { aStar, getShortestPathAstar } from "../Algorithms /A*";
 
-// create a function that where you can move the stat  and end node by dragging it
-
-// optimize the speed == refactor to many rendering of the grid
-
-// instead of rendering the grid figure out a way to just render the node
-
-// work on more Algorithms
-
-// fix where the rows are actually rows
-
-//when I place to many walls the function will not run
-
-//TODO
-//1. Fix Mouse inputs
-//2. Movable start and finish nodes on drag
-//3. optimize the render method to render the child node and not the parent
-//4. clear grid
-
-const startRow = 5;
-const startCol = 5;
+const startRow = 7;
+const startCol = 3;
 const finishRow = 15;
 const finishCol = 15;
 
-// creates a Node with both Algorithmic and DOM props
-const createNode = (col, row) => {
+const createNode = (row, col) => {
   return {
     col,
     distance: Infinity,
@@ -38,10 +19,12 @@ const createNode = (col, row) => {
     isStart: row === startRow && col === startCol,
     isVisited: false,
     isWall: false,
-    previousNode: null
+    previousNode: null,
+    totalCost: Infinity,
+    heuristic: Infinity
   };
 };
-// create the basic grid structure
+
 const createGrid = (rows, cols) => {
   let grid = [];
   for (let row = 0; row < rows; row++) {
@@ -55,8 +38,8 @@ const createGrid = (rows, cols) => {
 };
 
 const Grid = () => {
-  let [grid, setGrid] = useState(createGrid(20, 20));
-  let [mousePressed, setMousePressed] = useState(false);
+  const [grid, setGrid] = useState(createGrid(20, 20));
+  const [mousePressed, setMousePressed] = useState(false);
 
   const handleMouseDown = (row, col) => {
     setMousePressed(true);
@@ -64,10 +47,6 @@ const Grid = () => {
     if (!node.isStart && !node.isFinish) {
       handleToggleWall(row, col);
     }
-  };
-
-  const handleMouseUp = () => {
-    setMousePressed(false);
   };
 
   const handleMouseEnter = (row, col) => {
@@ -84,12 +63,11 @@ const Grid = () => {
 
   const handleToggleWall = (row, col) => {
     let newGrid = [...grid];
-    let node = newGrid[col][row];
+    let node = newGrid[row][col];
     node.isWall = node.isWall ? false : true;
     setGrid(newGrid);
   };
 
-  // visualiser
   const visualizeDijkstra = () => {
     const startNode = grid[startRow][startCol];
     const finishNode = grid[finishRow][finishCol];
@@ -97,7 +75,7 @@ const Grid = () => {
     const shortestPath = getShortestPath(finishNode);
     animateDijkstra(visitedNodes, shortestPath);
   };
-  //-- working great!
+
   const animateDijkstra = (visitedNodes, shortestPath) => {
     for (let i = 0; i <= visitedNodes.length; i++) {
       setTimeout(function timer() {
@@ -108,11 +86,10 @@ const Grid = () => {
             animateShortestPath(shortestPath);
           }
         }
-      }, i * 20);
+      }, i * 30);
     }
   };
-  // shortest path is not rendering css to the DOM
-  // seems like the state of the node isn't rendering
+
   const animateShortestPath = shortestPath => {
     for (let i = 1; i <= shortestPath.length; i++) {
       setTimeout(function timer() {
@@ -128,20 +105,29 @@ const Grid = () => {
   const visualizeAStar = () => {
     const startNode = grid[startRow][startCol];
     const finishNode = grid[finishRow][finishCol];
-    aStar(grid, startNode, finishNode);
-    // const visitedNodes = dijkstra(grid, startNode, finishNode, setGrid);
-    // const shortestPath = getShortestPath(finishNode);
-    // animateDijkstra(visitedNodes, shortestPath);
+    const visitedNodes = aStar(grid, startNode, finishNode);
+    const shortestPath = getShortestPathAstar(finishNode);
+    animateDijkstra(visitedNodes, shortestPath);
   };
 
   return (
-    <div className="pathfinder-wrapper" onMouseUp={() => handleMouseUp()}>
+    <div
+      className="pathfinder-wrapper"
+      onMouseUp={() => setMousePressed(false)}
+    >
       <button
         onClick={() => {
           visualizeDijkstra();
         }}
       >
         visualizeDijkstra
+      </button>
+      <button
+        onClick={() => {
+          visualizeAStar();
+        }}
+      >
+        visualize AStar
       </button>
 
       <div className="Grid">
