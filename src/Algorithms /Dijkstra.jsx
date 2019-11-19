@@ -46,10 +46,10 @@ const updateNeighbors = (node, grid, visited) => {
 const getNeighbors = (node, grid, visited) => {
   let neighbors = [];
   const { col, row } = node;
-  if (row > 0) neighbors.push(grid[col][row - 1]);
-  if (row < grid.length - 1) neighbors.push(grid[col][row + 1]);
-  if (col > 0) neighbors.push(grid[col - 1][row]);
-  if (col < grid[0].length - 1) neighbors.push(grid[col + 1][row]);
+  if (row > 0) neighbors.push(grid[row - 1][col]);
+  if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+  if (col > 0) neighbors.push(grid[row][col - 1]);
+  if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
   return neighbors.filter(neighbor => {
     let bool = visited.includes(neighbor);
     if (bool === false) return neighbor;
