@@ -4,43 +4,17 @@ import "./Grid.css";
 import { dijkstra, getShortestPath } from "../Algorithms /Dijkstra";
 import { aStar, getShortestPathAstar } from "../Algorithms /A*";
 
-const startRow = 7;
-const startCol = 3;
-const finishRow = 15;
-const finishCol = 15;
+const Grid = props => {
+  // create the grid
+  const [grid, setGrid] = useState(props.createGrid(20, 20));
+  // startNode & endNode
+  const startRow = props.startRow;
+  const startCol = props.startCol;
+  const finishRow = props.finishRow;
+  const finishCol = props.finishCol;
 
-const createNode = (row, col) => {
-  return {
-    col,
-    distance: Infinity,
-    row,
-    isFinish: row === finishRow && col === finishCol,
-    isPath: false,
-    isStart: row === startRow && col === startCol,
-    isVisited: false,
-    isWall: false,
-    previousNode: null,
-    totalCost: Infinity,
-    heuristic: Infinity
-  };
-};
-
-const createGrid = (rows, cols) => {
-  let grid = [];
-  for (let row = 0; row < rows; row++) {
-    let currRow = [];
-    for (let col = 0; col < cols; col++) {
-      currRow.push(createNode(row, col));
-    }
-    grid.push(currRow);
-  }
-  return grid;
-};
-
-const Grid = () => {
-  const [grid, setGrid] = useState(createGrid(20, 20));
+  //handle mouse events
   const [mousePressed, setMousePressed] = useState(false);
-
   const handleMouseDown = (row, col) => {
     setMousePressed(true);
     let node = grid[row][col];
@@ -48,19 +22,16 @@ const Grid = () => {
       handleToggleWall(row, col);
     }
   };
-
   const handleMouseEnter = (row, col) => {
     let node = grid[row][col];
     if (mousePressed && !node.isStart && !node.isFinish) {
       handleToggleWall(row, col);
     }
   };
-
   const handleMouseLeave = (row, col) => {
     let node = grid[row][col];
     return node;
   };
-
   const handleToggleWall = (row, col) => {
     let newGrid = [...grid];
     let node = newGrid[row][col];
