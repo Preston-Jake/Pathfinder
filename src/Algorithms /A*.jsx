@@ -39,7 +39,7 @@ const getHeuristic = (node, finishNode) => {
   const a = Math.pow(finishNode.row - row, 2);
   const b = Math.pow(finishNode.col - col, 2);
   heuristic = a + b;
-  return heuristic;
+  return Math.sqrt(heuristic);
 };
 
 const getNeighbors = (node, grid, visited) => {

@@ -34,6 +34,16 @@ function App() {
     }
     return grid;
   };
+
+  const handleMoveStartNode = (row, col) => {
+    setStartRow(row);
+    setStartCol(col);
+  };
+
+  const handleMoveFinishNode = (row, col) => {
+    setFinishRow(row);
+    setFinishCol(col);
+  };
   return (
     <div className="App">
       <Grid
@@ -42,6 +52,8 @@ function App() {
         startCol={startCol}
         finishRow={finishRow}
         finishCol={finishCol}
+        moveStartNode={handleMoveStartNode}
+        moveFinishNode={handleMoveFinishNode}
       />
     </div>
   );
