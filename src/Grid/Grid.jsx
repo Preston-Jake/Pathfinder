@@ -15,23 +15,64 @@ const Grid = props => {
 
   //handle mouse events
   const [mousePressed, setMousePressed] = useState(false);
+  const [moveStart, setMoveStart] = useState(false);
+  const [moveFinish, setMoveFinish] = useState(false);
+
   const handleMouseDown = (row, col) => {
     setMousePressed(true);
     let node = grid[row][col];
-    if (!node.isStart && !node.isFinish) {
-      handleToggleWall(row, col);
-    }
+    if (!node.isStart && !node.isFinish) handleToggleWall(row, col);
+    if (node.isStart) setMoveStart(true);
+    if (node.isFinish) setMoveFinish(true);
   };
+
+  const handleMouseUp = () => {
+    setMousePressed(false);
+    setMoveStart(false);
+    setMoveFinish(false);
+  };
+
   const handleMouseEnter = (row, col) => {
-    let node = grid[row][col];
-    if (mousePressed && !node.isStart && !node.isFinish) {
-      handleToggleWall(row, col);
-    }
+    if (mousePressed && !moveStart && !moveFinish) handleToggleWall(row, col);
+    if (mousePressed && moveStart && !moveFinish) handleStartEnter(row, col);
+    if (mousePressed && !moveStart && moveFinish) handleFinishEnter(row, col);
   };
+
   const handleMouseLeave = (row, col) => {
-    let node = grid[row][col];
-    return node;
+    if (mousePressed && moveStart) handleStartLeave(row, col);
+    if (mousePressed && moveFinish) handleFinishLeave(row, col);
   };
+
+  const handleStartEnter = (row, col) => {
+    let newGrid = [...grid];
+    let node = newGrid[row][col];
+    node.isStart = true;
+    props.moveStartNode(row, col);
+    setGrid(newGrid);
+  };
+
+  const handleStartLeave = (row, col) => {
+    let newGrid = [...grid];
+    let node = newGrid[row][col];
+    node.isStart = false;
+    setGrid(newGrid);
+  };
+
+  const handleFinishEnter = (row, col) => {
+    let newGrid = [...grid];
+    let node = newGrid[row][col];
+    node.isFinish = true;
+    props.moveFinishNode(row, col);
+    setGrid(newGrid);
+  };
+
+  const handleFinishLeave = (row, col) => {
+    let newGrid = [...grid];
+    let node = newGrid[row][col];
+    node.isFinish = false;
+    setGrid(newGrid);
+  };
+
   const handleToggleWall = (row, col) => {
     let newGrid = [...grid];
     let node = newGrid[row][col];
@@ -82,10 +123,7 @@ const Grid = props => {
   };
 
   return (
-    <div
-      className="pathfinder-wrapper"
-      onMouseUp={() => setMousePressed(false)}
-    >
+    <div className="pathfinder-wrapper" onMouseUp={() => handleMouseUp()}>
       <button
         onClick={() => {
           visualizeDijkstra();
