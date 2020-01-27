@@ -79,7 +79,7 @@ const Grid = props => {
     node.isWall = node.isWall ? false : true;
     setGrid(newGrid);
   };
-
+  // Animations and Visualizations *need to refactoring
   const visualizeDijkstra = () => {
     const startNode = grid[startRow][startCol];
     const finishNode = grid[finishRow][finishCol];
@@ -120,6 +120,12 @@ const Grid = props => {
     const visitedNodes = aStar(grid, startNode, finishNode);
     const shortestPath = getShortestPathAstar(finishNode);
     animateDijkstra(visitedNodes, shortestPath);
+  };
+  //clear grid
+  //function that clears the path 
+  const handleRestGrid = () => {
+    const newGrid = props.createGrid(20, 20);
+    setGrid(newGrid);
   };
 
   return (
@@ -163,7 +169,7 @@ const Grid = props => {
                     isWall={isWall}
                     isVisited={isVisited}
                     isPath={isPath}
-                    mouseDown={handleMouseDown}
+                     mouseDown={handleMouseDown}
                     mouseEnter={handleMouseEnter}
                     mouseLeave={handleMouseLeave}
                   />
@@ -173,6 +179,7 @@ const Grid = props => {
           );
         })}
       </div>
+      <button onClick={() => handleRestGrid()}>Clear Grid</button>
     </div>
   );
 };
